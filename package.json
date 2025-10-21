@@ -1,0 +1,28 @@
+{
+  "name": "neo-tours",
+  "version": "1.0.0",
+  "description": "neo-tours is a tour booking rest api",
+  "main": "server.js",
+  "scripts": {
+    "start:dev": "set NODE_ENV=development&& nodemon server.js",
+    "start:prod": "set NODE_ENV=production&& nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arpitjana2103/neo-tours.git"
+  },
+  "author": "Arpit Jana",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arpitjana2103/neo-tours/issues"
+  },
+  "homepage": "https://github.com/arpitjana2103/neo-tours#readme",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongoose": "^8.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
