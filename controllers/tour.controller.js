@@ -8,3 +8,12 @@ exports.createTour = catchAsyncErrors(async function (req, res, next) {
         data: { tour: newTour },
     });
 });
+
+exports.getAllTours = catchAsyncErrors(async function (req, res, next) {
+    const tours = await Tour.find();
+    return res.status(200).json({
+        status: "success",
+        count: tours.length,
+        data: { tours: tours },
+    });
+});
