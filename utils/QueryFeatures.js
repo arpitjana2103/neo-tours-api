@@ -34,6 +34,17 @@ class QueryFeatures {
         return this;
     }
 
+    sort() {
+        const sortByStr = QueryFeatures.processSortByStr(this.reqQuery.sort);
+        const mongooseQuery = this.mongooseQuery.sort(sortByStr);
+        return this;
+    }
+
+    static processSortByStr(sortByStr) {
+        if (!sortByStr) return "-createdAt";
+        return sortByStr.replace(/,/g, " ");
+    }
+
     static processReqQuery({ ...reqQuery }) {
         // 1. Exclude Prohibited fields
         const excludeFields = ["page", "limit", "sort", "fields"];
