@@ -40,9 +40,20 @@ class QueryFeatures {
         return this;
     }
 
+    limitFields() {
+        const fields = QueryFeatures.processFieldsStr(this.reqQuery.fields);
+        this.mongooseQuery = this.mongooseQuery.select(fields);
+        return this;
+    }
+
     static processSortByStr(sortByStr) {
         if (!sortByStr) return "-createdAt";
         return sortByStr.replace(/,/g, " ");
+    }
+
+    static processFieldsStr(fieldsStr) {
+        if (!fieldsStr) return "";
+        return fieldsStr.replace(/,/g, " ");
     }
 
     static processReqQuery({ ...reqQuery }) {
