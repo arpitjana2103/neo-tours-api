@@ -58,3 +58,10 @@ const importData = async function (fileName) {
         process.exit(1);
     }
 })();
+
+/*
+[ Note : 
+ Command Structure 
+ node <filePath>/<fileName> collectionName<smallcase>
+ Example : node importDevData.js tours
+*/
