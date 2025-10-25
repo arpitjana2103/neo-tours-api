@@ -1,5 +1,5 @@
 const Tour = require("./../models/tour.model");
-const { catchAsyncErrors } = require("./error.controller");
+const { catchAsyncErrors, AppError } = require("./error.controller");
 const QueryFeatures = require("./../utils/QueryFeatures");
 
 exports.createTour = catchAsyncErrors(async function (req, res, next) {
@@ -35,4 +35,18 @@ exports.aliasTop5Cheap = catchAsyncErrors(async function (req, res, next) {
         fields: "name,price,ratingsAverage,summery,difficulty,duration",
     });
     next();
+});
+
+exports.getTour = catchAsyncErrors(async function (req, res, next) {
+    const { id } = req.params;
+    const tour = await Tour.findById(id);
+
+    if (!tour) {
+        return next(new AppError("No tour found with that ID", 404));
+    }
+
+    return res.status(200).json({
+        status: "success",
+        data: { tour: tour },
+    });
 });
