@@ -46,6 +46,14 @@ class QueryFeatures {
         return this;
     }
 
+    paginate() {
+        const page = Number(this.reqQuery.page) || 1;
+        const limitVal = Number(this.reqQuery.limit) || 5;
+        const skipVal = (page - 1) * limitVal;
+        this.mongooseQuery = this.mongooseQuery.skip(skipVal).limit(limitVal);
+        return this;
+    }
+
     static processSortByStr(sortByStr) {
         if (!sortByStr) return "-createdAt";
         return sortByStr.replace(/,/g, " ");
