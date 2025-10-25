@@ -27,3 +27,12 @@ exports.getAllTours = catchAsyncErrors(async function (req, res, next) {
         data: { tours: tours },
     });
 });
+
+exports.aliasTop5Cheap = catchAsyncErrors(async function (req, res, next) {
+    req.query = Object.assign(req.query, {
+        limit: "5",
+        sort: "price,-ratingsAverage",
+        fields: "name,price,ratingsAverage,summery,difficulty,duration",
+    });
+    next();
+});

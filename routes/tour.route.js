@@ -8,4 +8,8 @@ tourRouter
     .post(tourController.createTour)
     .get(tourController.getAllTours);
 
+tourRouter
+    .route("/top-5-cheap")
+    .get(tourController.aliasTop5Cheap, tourController.getAllTours);
+
 module.exports = tourRouter;
