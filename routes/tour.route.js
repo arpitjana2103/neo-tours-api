@@ -12,6 +12,9 @@ tourRouter
     .route("/top-5-cheap")
     .get(tourController.aliasTop5Cheap, tourController.getAllTours);
 
-tourRouter.route("/:id").get(tourController.getTour);
+tourRouter
+    .route("/:id")
+    .get(tourController.getTour)
+    .patch(tourController.updateTour);
 
 module.exports = tourRouter;

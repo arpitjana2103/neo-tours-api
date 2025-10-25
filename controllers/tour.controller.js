@@ -50,3 +50,20 @@ exports.getTour = catchAsyncErrors(async function (req, res, next) {
         data: { tour: tour },
     });
 });
+
+exports.updateTour = catchAsyncErrors(async function (req, res, next) {
+    const { id } = req.params;
+    const tour = await Tour.findByIdAndUpdate(id, req.body, {
+        new: true,
+        runValidators: true,
+    });
+
+    if (!tour) {
+        return next(new AppError(`No tour found with the id: ${id}`, 404));
+    }
+
+    return res.status(200).json({
+        status: "success",
+        data: { tour: tour },
+    });
+});
