@@ -12,6 +12,8 @@ tourRouter
     .route("/top-5-cheap")
     .get(tourController.aliasTop5Cheap, tourController.getAllTours);
 
+tourRouter.route("/tour-stats").get(tourController.getTourStats);
+
 tourRouter
     .route("/:id")
     .get(tourController.getTour)
