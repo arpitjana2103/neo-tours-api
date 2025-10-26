@@ -128,5 +128,20 @@ tourSchema.virtual("durationWeeks").get(function () {
     return this.duration ? Number((this.duration / 7).toFixed(1)) : undefined;
 });
 
+//////////////////////////////////////////////
+// DOCUMENT MIDDLEWARE / HOOK ///////////////
+
+// [ NOTE : runs before Model.prototype.save() and Model.create() ]
+tourSchema.pre("save", function (next) {
+    this.slug = slugify(this.name, { lower: true });
+    next();
+});
+
+// [ NOTE : runs after Model.prototype.save() and Model.create() ]
+tourSchema.post("save", function (doc, next) {
+    doc.__v = undefined;
+    next();
+});
+
 const Tour = mongoose.model("Tour", tourSchema);
 module.exports = Tour;
