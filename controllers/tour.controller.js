@@ -3,6 +3,15 @@ const { catchAsyncErrors, AppError } = require("./error.controller");
 const QueryFeatures = require("./../utils/QueryFeatures");
 
 exports.createTour = catchAsyncErrors(async function (req, res, next) {
+    /*
+    [ Note : 
+    Using `Tour.create(req.body)` is a shorthand for `new Tour(req.body).save()`.
+    Both run validation and save middleware, but `.save()` allows pre-save modifications.
+    Use `.create()` for quick inserts, and `.save()` when you need custom logic before saving.
+    
+    const doc = new Tour(req.body);
+    const newTour = await doc.save();
+    */
     const newTour = await Tour.create(req.body);
     return res.status(201).json({
         status: "success",
