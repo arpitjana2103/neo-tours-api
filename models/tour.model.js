@@ -121,5 +121,12 @@ const tourSchema = new mongoose.Schema(
     }
 );
 
+//////////////////////////////////////////////
+// Virtual Fields ///////////////////////////
+
+tourSchema.virtual("durationWeeks").get(function () {
+    return this.duration ? Number((this.duration / 7).toFixed(1)) : undefined;
+});
+
 const Tour = mongoose.model("Tour", tourSchema);
 module.exports = Tour;
