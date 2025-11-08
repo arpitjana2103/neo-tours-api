@@ -1,6 +1,7 @@
 const express = require("express");
 const qs = require("qs");
 const tourRouter = require("./routes/tour.route");
+const userRouter = require("./routes/user.route");
 const {
     globalErrorHandeller,
     AppError,
@@ -17,6 +18,7 @@ app.set("query parser", (str) => qs.parse(str));
 app.use(express.json());
 
 app.use("/api/v1/tours", tourRouter);
+app.use("/api/v1/users", userRouter);
 
 // Handellling Unhandled Routes
 app.use((req, res, next) => {
