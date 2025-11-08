@@ -88,6 +88,7 @@ function handleCastErrorDB(err) {
         const message = `[Invalid] ${err.path}: "${err.value}" is not a valid value.`;
         return new exports.AppError(message, 400);
     }
+    return err;
 }
 
 function handleDuplicateFieldsDB(err) {
