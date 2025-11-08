@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
         required: [true, "##-please-provide-a-password-##"],
         minlength: 8,
     },
-    passwordConfirmed: {
+    passwordConfirme: {
         type: String,
         required: [true, "##-please-confirm-your-passwrod-##"],
     },
