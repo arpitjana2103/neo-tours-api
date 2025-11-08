@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: {
             validator: validator.isEmail,
-            message: ["##-please-provide-a-valid-email-##"],
+            message: "##-please-provide-a-valid-email-##",
         },
     },
     photo: String,
@@ -25,6 +25,16 @@ const userSchema = new mongoose.Schema({
     passwordConfirm: {
         type: String,
         required: [true, "##-please-confirm-your-passwrod-##"],
+        validate: {
+            /* [ Note : 
+                Validator runs only on document creation (save/create), not for updates.
+                'this' refers to the current doc for NEW docs only.
+            */
+            validator: function (passwordConfirm) {
+                return this.password === passwordConfirm;
+            },
+            message: "##-password-and-passwordConfirm-need-to-be-same-##",
+        },
     },
 });
 

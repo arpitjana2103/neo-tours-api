@@ -49,13 +49,13 @@ const tourSchema = new mongoose.Schema(
             type: Number,
             validate: {
                 /* [ Note : 
-                Validator runs only on document creation (save/create).
-                'this' refers to the current doc for NEW docs only, not for updates.
+                Validator runs only on document creation (save/create), not for updates.
+                'this' refers to the current doc for NEW docs only.
                 */
                 validator: function (discount) {
                     return this.price > discount;
                 },
-                message: ["##-pricediscount-must-be-less-than-price-##"],
+                message: "##-pricediscount-must-be-less-than-price-##",
             },
         },
         summary: {
