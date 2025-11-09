@@ -1,4 +1,5 @@
 const User = require("./../models/user.model");
+const jwt = require("jsonwebtoken");
 const { catchAsyncErrors } = require("./error.controller");
 
 const signToken = function (payLoad) {
