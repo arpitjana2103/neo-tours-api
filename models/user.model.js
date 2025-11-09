@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
         validate: {
             validator: validatePassword,
             message:
-                "##-Password-Must-Be-5-To-20-Characters-And-Include-Uppercase,Lowercase-&-Number-##",
+                "##-password-must-be-5-to-20-characters-and-include-uppercase,lowercase-&-number-##",
         },
         select: false,
     },
@@ -78,6 +78,14 @@ userSchema.post("save", function (doc, next) {
     doc.__v = undefined;
     next();
 });
+
+////////////////////////////////////////
+// Instance Method /////////////////////
+// These Methods will be availabe for all the Documents
+
+userSchema.methods.verifyPassword = async function (rawPass, hashedPass) {
+    return await bcrypt.compare(rawPass, hashedPass);
+};
 
 const User = mongoose.model("User", userSchema);
 
