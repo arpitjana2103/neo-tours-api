@@ -1,5 +1,6 @@
-const User = require("./../models/user.model");
+const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
+const User = require("./../models/user.model");
 const { AppError } = require("../controllers/error.controller");
 const { catchAsyncErrors } = require("./error.controller");
 
@@ -13,10 +14,9 @@ const signToken = function (payLoad) {
 };
 
 const signAndSendToken = function (user, statusCode, res) {
-    const token = signToken({ _id: user._id });
     return res.status(statusCode).json({
         status: "success",
-        token: token,
+        token: signToken({ _id: user._id }),
         data: {
             user: {
                 _id: user._id,
@@ -55,4 +55,36 @@ exports.login = catchAsyncErrors(async function (req, res, next) {
 
     // [3] If everything ok, send Token to client
     signAndSendToken(user, 200, res);
+});
+
+exports.authProtect = catchAsyncErrors(async function (req, res, next) {
+    // [1] Getting the Token
+    let token = req.headers.authorization;
+    if (token && token.startsWith("Bearer")) {
+        token = token.split(" ")[1];
+    }
+    if (!token) {
+        return next(new AppError("Please login to get access.", 401));
+    }
+
+    // [2] Verify token
+    const jwtSecretKey = process.env.JWT_SECRET;
+    const decoded = await promisify(jwt.verify)(token, jwtSecretKey);
+
+    // [3] Check if user still exists
+    // Ex. What if user has been deleated in the mean-time and someone-else is
+    // is trying to access stealing the token
+    const user = await User.findById(decoded._id);
+    if (!user) {
+        return next(new AppError("The User donot exist.", 401));
+    }
+
+    // [4] Check if user changed password after the token was issued
+    if (user.changedPasswordAfter(decoded.iat)) {
+        return next(AppError("Password changed! Please log in again!", 401));
+    }
+
+    req.user = user;
+
+    next();
 });

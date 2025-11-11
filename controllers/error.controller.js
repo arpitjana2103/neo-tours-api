@@ -93,9 +93,7 @@ function handleCastErrorDB(err) {
 
 function handleDuplicateFieldsDB(err) {
     if (err.code === 11000) {
-        const message = `[Duplicate field value] ${JSON.stringify(
-            err.keyValue
-        )}`;
+        const message = `[Duplicate field value] ${JSON.stringify(err.keyValue)}`;
         return new exports.AppError(message, 400);
     }
     return err;
