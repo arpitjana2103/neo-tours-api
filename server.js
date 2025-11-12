@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const app = require("./app");
 
+// Handlling Uncaught Exceptions [ Synchronous errors ]
+process.on("uncaughtException", function (err) {
+    console.log("UNCAUGHT EXCEPTION :: SHUTTING DOWN THE SERVER");
+    console.log(err);
+    process.exit(1);
+});
+
 dotenv.config({ path: "./config.env" });
 
 const DBLOC = process.env.DATABASE_LOCAL;
