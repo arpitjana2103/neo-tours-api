@@ -147,6 +147,11 @@ tourSchema.post("save", function (doc, next) {
 ////////////////////////////////////////
 // QUERY MIDDLEWARE / HOOK /////////////
 
+tourSchema.pre(/^find/, function (next) {
+    this.start = Date.now();
+    next();
+});
+
 // [ NOTE : runs before Model.find() but not for findOne() ]
 tourSchema.pre("find", function (next) {
     this.find({ secretTour: { $ne: true } });
