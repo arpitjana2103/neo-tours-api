@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 const tourSchema = new mongoose.Schema(
     {
@@ -118,7 +119,7 @@ const tourSchema = new mongoose.Schema(
         */
         toJSON: { virtuals: true },
         toObject: { virtuals: true },
-    }
+    },
 );
 
 //////////////////////////////////////////////
@@ -147,7 +148,7 @@ tourSchema.post("save", function (doc, next) {
 // QUERY MIDDLEWARE / HOOK /////////////
 
 // [ NOTE : runs before Model.find() but not for findOne() ]
-tourSchema.pre(/^find/, function (next) {
+tourSchema.pre("find", function (next) {
     this.find({ secretTour: { $ne: true } });
     next();
 });
