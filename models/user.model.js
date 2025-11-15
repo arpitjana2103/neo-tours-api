@@ -60,6 +60,7 @@ const userSchema = new mongoose.Schema({
             message: "##-password-and-passwordConfirm-need-to-be-same-##",
         },
     },
+    passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetTokenExpires: Date,
 });
@@ -79,6 +80,12 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
+userSchema.pre("save", function (next) {
+    if (!this.isModified("password") || this.isNew) return next();
+    this.passwordChangedAt = Date.now() - 1000;
+    next();
+});
+
 // runs after Model.prototype.save() and Model.create()
 userSchema.post("save", function (doc, next) {
     doc.password = undefined;
@@ -93,6 +100,10 @@ userSchema.post("save", function (doc, next) {
 
 userSchema.methods.verifyPassword = async function (rawPass, hashedPass) {
     return await bcrypt.compare(rawPass, hashedPass);
+};
+
+userSchema.methods.varifyToken = async function (rawToken, hashedToken) {
+    return await bcrypt.compare(rawToken, hashedToken);
 };
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {

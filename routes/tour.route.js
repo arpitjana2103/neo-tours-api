@@ -6,7 +6,7 @@ const tourRouter = express.Router();
 tourRouter
     .route("/")
     .post(tourController.createTour)
-    .get(tourController.getAllTours);
+    .get(authController.authProtect, tourController.getAllTours);
 
 tourRouter
     .route("/top-5-cheap")

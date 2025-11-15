@@ -124,9 +124,9 @@ exports.forgotPassword = catchAsyncErrors(async function (req, res, next) {
 
     // [4] Send Token to User-Email
     const baseURL = `${req.protocol}://${req.get("host")}`;
-    const passwordResetURL = `${baseURL}/api/v1/users/resetPassword/${resetToken}`;
+    const passwordResetURL = `${baseURL}/api/v1/users/reset-password/${resetToken}`;
 
-    const message = `Dear ${user.name},\n\nWe received a request to reset your password.\nIf this was you, please follow the instructions below:\n\nSubmit a - PATCH - request to the following URL:\n"${passwordResetURL}"\n\nRequest Body: \n{\n  "password": "<new-password>",\n  "passwordConfirm": "<new-password>",\n  "email": "${user.email}"\n}\n\nNote: This link will be valid for next 10 minutes\nIf you did not request a password reset, you can safely ignore this email.\n\nThanks,\nThe SafarSathi Team`;
+    const message = `Dear ${user.name},\n\nWe received a request to reset your password.\nIf this was you, please follow the instructions below:\n\nSubmit a - PATCH - request to the following URL:\n"${passwordResetURL}"\n\nRequest Body: \n{\n  "password": "<new-password>",\n  "passwordConfirm": "<new-password>",\n  "email": "${user.email}"\n}\n\nNote: This link will be valid for next 10 minutes\nIf you did not request a password reset, you can safely ignore this email.\n\nThanks,\nThe NeoTours Team`;
 
     try {
         await sendEmail({
@@ -146,4 +146,47 @@ exports.forgotPassword = catchAsyncErrors(async function (req, res, next) {
         await user.save({ validateBeforeSave: false });
         next({ "err-type": "emailError", ...error });
     }
+});
+
+exports.resetPassword = catchAsyncErrors(async function (req, res, next) {
+    // [1] Get User base on Email
+    const { email } = req.body;
+    const user = await User.findOne({
+        email: email,
+    });
+    if (!user) {
+        return next(
+            new AppError("No user found with the email-address provided."),
+        );
+    }
+
+    // [3] Check if Token Invalid
+    const rawToken = req.params.token;
+    const hashedToken = user.passwordResetToken || "";
+    const isTokenInvalid = !(await user.varifyToken(rawToken, hashedToken));
+    if (isTokenInvalid) {
+        return next(new AppError("Invalid Password-Reset-Link !", 400));
+    }
+
+    // [4] Check if Token Expired
+    /*
+    Exmple : 
+    let say user forgetPassword at 8.00
+    then passwordResetLink is valid upto 8.10
+    if Date.now() is 8.15 then user is not allowed to reset password with that link
+    */
+    const resetTokenExpiredAt = user.passwordResetTokenExpires.getTime();
+    if (resetTokenExpiredAt < Date.now()) {
+        return next(new AppError("Password-Reset-Link expired !", 400));
+    }
+
+    // [2] Set new password
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpires = undefined;
+    await user.save();
+
+    // [3] Log the user in, send JWT
+    signAndSendToken(user, 200, res);
 });

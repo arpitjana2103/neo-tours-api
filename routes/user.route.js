@@ -6,5 +6,6 @@ userRouter.route("/signup").post(authController.signup);
 userRouter.route("/login").post(authController.login);
 
 userRouter.route("/forgot-password").post(authController.forgotPassword);
+userRouter.route("/reset-password/:token").patch(authController.resetPassword);
 
 module.exports = userRouter;
