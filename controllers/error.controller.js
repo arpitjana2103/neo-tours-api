@@ -69,6 +69,9 @@ function sendErrForProd(err, res) {
     // Exmple : Fail schema validation
     err = handleValidationError(err);
 
+    // Handle Email Sending Errors
+    err = handleEmailSendingError(err);
+
     if (err.isOperational) {
         return res.status(err.statusCode).json({
             status: err.status,
@@ -104,5 +107,13 @@ function handleValidationError(err) {
         const { message } = err;
         return new exports.AppError(message, 400);
     }
+    return err;
+}
+
+function handleEmailSendingError(err) {
+    if (err["err-type"] === "emailError") {
+        return new exports.AppError("There was an error in Sending Email", 500);
+    }
+
     return err;
 }

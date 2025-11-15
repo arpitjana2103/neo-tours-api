@@ -1,8 +1,11 @@
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const User = require("./../models/user.model");
+const helper = require("./../utils/helper.util");
 const { AppError } = require("../controllers/error.controller");
 const { catchAsyncErrors } = require("./error.controller");
+const { sendEmail } = require("./../utils/email.util");
 
 const signToken = function (payLoad) {
     const jwtSecretKey = process.env.JWT_SECRET;
@@ -102,3 +105,45 @@ exports.restrictTo = function (...roles) {
         next();
     };
 };
+
+exports.forgotPassword = catchAsyncErrors(async function (req, res, next) {
+    // [1] Get user based on POSTed Email
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+        return next(new AppError("No user found !", 404));
+    }
+
+    // [2] Generate Random Reset Token
+    const resetToken = await user.createPasswordResetToken();
+
+    // [3] Update User
+    user.passwordResetToken = await bcrypt.hash(resetToken, 1);
+    user.passwordResetTokenExpires =
+        Date.now() + helper.convertToMilliseconds({ minutes: 10 });
+    await user.save({ validateBeforeSave: false });
+
+    // [4] Send Token to User-Email
+    const baseURL = `${req.protocol}://${req.get("host")}`;
+    const passwordResetURL = `${baseURL}/api/v1/users/resetPassword/${resetToken}`;
+
+    const message = `Dear ${user.name},\n\nWe received a request to reset your password.\nIf this was you, please follow the instructions below:\n\nSubmit a - PATCH - request to the following URL:\n"${passwordResetURL}"\n\nRequest Body: \n{\n  "password": "<new-password>",\n  "passwordConfirm": "<new-password>",\n  "email": "${user.email}"\n}\n\nNote: This link will be valid for next 10 minutes\nIf you did not request a password reset, you can safely ignore this email.\n\nThanks,\nThe SafarSathi Team`;
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: "SararSathi : Reset Password Instructions",
+            message: message,
+        });
+
+        return res.status(200).json({
+            status: "success",
+            message:
+                "Password reset instructions have been sent to your registered email-address.",
+        });
+    } catch (error) {
+        user.passwordResetToken = undefined;
+        user.passwordResetTokenExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+        next({ "err-type": "emailError", ...error });
+    }
+});

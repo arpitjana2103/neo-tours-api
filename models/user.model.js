@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const helper = require("./../utils/helper.util");
 
 const validatePassword = function (password) {
     return (
@@ -59,6 +60,8 @@ const userSchema = new mongoose.Schema({
             message: "##-password-and-passwordConfirm-need-to-be-same-##",
         },
     },
+    passwordResetToken: String,
+    passwordResetTokenExpires: Date,
 });
 
 ////////////////////////////////////////
@@ -101,6 +104,13 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
         return JWTTimestamp < changedTimeStamp;
     }
     return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+    const fourDigitNum = helper.getRandomNum(1000, 9999);
+    const fourAlphaStr = helper.getRandomAlphabets(4);
+    const token = `${fourDigitNum}-${fourAlphaStr}`;
+    return token;
 };
 
 const User = mongoose.model("User", userSchema);
