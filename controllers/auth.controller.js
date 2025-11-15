@@ -85,7 +85,9 @@ exports.authProtect = catchAsyncErrors(async function (req, res, next) {
 
     // [4] Check if user changed password after the token was issued
     if (user.changedPasswordAfter(decoded.iat)) {
-        return next(AppError("Password changed! Please log in again!", 401));
+        return next(
+            new AppError("Password changed! Please log in again!", 401),
+        );
     }
 
     req.user = user;

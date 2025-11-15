@@ -60,6 +60,10 @@ const userSchema = new mongoose.Schema({
             message: "##-password-and-passwordConfirm-need-to-be-same-##",
         },
     },
+    active: {
+        type: Boolean,
+        default: true,
+    },
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetTokenExpires: Date,
@@ -91,6 +95,11 @@ userSchema.post("save", function (doc, next) {
     doc.password = undefined;
     doc.active = undefined;
     doc.__v = undefined;
+    next();
+});
+
+userSchema.pre(/^find/, function (next) {
+    this.find({ active: { $ne: false } });
     next();
 });
 
