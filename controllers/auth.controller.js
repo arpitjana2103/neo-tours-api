@@ -63,6 +63,7 @@ exports.login = catchAsyncErrors(async function (req, res, next) {
 exports.authProtect = catchAsyncErrors(async function (req, res, next) {
     // [1] Getting the Token
     let token = req.headers.authorization;
+    console.log(token);
     if (token && token.startsWith("Bearer")) {
         token = token.split(" ")[1];
     }
@@ -188,5 +189,23 @@ exports.resetPassword = catchAsyncErrors(async function (req, res, next) {
     await user.save();
 
     // [3] Log the user in, send JWT
+    signAndSendToken(user, 200, res);
+});
+
+exports.updatePassword = catchAsyncErrors(async function (req, res, next) {
+    // [1] Get user from collection
+    const user = await User.findById(req.user.id).select("+password");
+
+    // [2] Check if POSTed passowrd is correct
+    if (!(await user.verifyPassword(req.body.passwordCurrent, user.password))) {
+        return next(new AppError("Your current password is wrong.", 401));
+    }
+
+    // [3] Update the Password
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    await user.save();
+
+    // [4] Log in User and send JWT
     signAndSendToken(user, 200, res);
 });

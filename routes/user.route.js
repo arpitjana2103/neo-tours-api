@@ -7,5 +7,7 @@ userRouter.route("/login").post(authController.login);
 
 userRouter.route("/forgot-password").post(authController.forgotPassword);
 userRouter.route("/reset-password/:token").patch(authController.resetPassword);
-
+userRouter
+    .route("/update-password")
+    .patch(authController.authProtect, authController.updatePassword);
 module.exports = userRouter;
