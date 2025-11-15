@@ -1,6 +1,6 @@
 const Tour = require("./../models/tour.model");
 const { catchAsyncErrors, AppError } = require("./error.controller");
-const QueryFeatures = require("./../utils/QueryFeatures");
+const QueryFeatures = require("./../utils/queryFeatures.util");
 
 exports.createTour = catchAsyncErrors(async function (req, res, next) {
     /*
