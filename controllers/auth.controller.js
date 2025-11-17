@@ -17,9 +17,21 @@ const signToken = function (payLoad) {
 };
 
 const signAndSendToken = function (user, statusCode, res) {
+    const token = signToken({ _id: user._id });
+
+    const cookieOptions = {
+        expires: new Date(
+            Date.now() + helper.toMs(process.env.JWT_COOKIE_EXPIRES_IN),
+        ),
+        secure: false,
+        httpOnly: true,
+    };
+    if (helper.runningOnProd()) cookieOptions.secure = true;
+    res.cookie("jwt", token, cookieOptions);
+
     return res.status(statusCode).json({
         status: "success",
-        token: signToken({ _id: user._id }),
+        token: token,
         data: {
             user: {
                 _id: user._id,
@@ -121,8 +133,7 @@ exports.forgotPassword = catchAsyncErrors(async function (req, res, next) {
 
     // [3] Update User
     user.passwordResetToken = await bcrypt.hash(resetToken, 1);
-    user.passwordResetTokenExpires =
-        Date.now() + helper.convertToMilliseconds({ minutes: 10 });
+    user.passwordResetTokenExpires = new Date(Date.now() + helper.toMs("10m"));
     await user.save({ validateBeforeSave: false });
 
     // [4] Send Token to User-Email
