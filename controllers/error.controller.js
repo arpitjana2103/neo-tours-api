@@ -1,3 +1,5 @@
+const helper = require("./../utils/helper.util");
+
 exports.AppError = class extends Error {
     constructor(message, statusCode) {
         super(message);
@@ -22,7 +24,7 @@ exports.AppError = class extends Error {
 exports.catchAsyncErrors = function (asyncFunc) {
     return function (req, res, next) {
         asyncFunc(req, res, next).catch(function (err) {
-            console.log("[Caught Async Error]", err);
+            // console.log("[Caught Async Error]", err);
             return next(err);
         });
     };
@@ -32,11 +34,11 @@ exports.globalErrorHandeller = function (err, req, res, next) {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || "error";
 
-    if (process.env.NODE_ENV === "development") {
+    if (helper.runningOnDev()) {
         return sendErrForDev(err, res);
     }
 
-    if (process.env.NODE_ENV === "production") {
+    if (helper.runningOnProd()) {
         return sendErrForProd(err, res);
     }
 };
