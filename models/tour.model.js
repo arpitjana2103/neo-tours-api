@@ -158,6 +158,14 @@ tourSchema.pre("find", function (next) {
     next();
 });
 
+tourSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: "guides",
+        select: "name email photo role",
+    });
+    next();
+});
+
 /*
 [ NOTE : runs after
 Model.find(), Model.findOne(), Model.findOneAndDelete()

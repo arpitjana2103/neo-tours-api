@@ -2,7 +2,8 @@ const { default: mongoose } = require("mongoose");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const Models = {
-    Tours: require("./../models/tour.model"),
+    tours: require("../models/tour.model"),
+    users: require("../models/user.model"),
 };
 
 dotenv.config({ path: `${__dirname}/../config.env` });
@@ -61,7 +62,8 @@ const importData = async function (fileName) {
 
 /*
 [ Note : 
+ cd to dir first
  Command Structure 
- node <filePath>/<fileName> collectionName<smallcase>
+ node <fileName> collectionName@<smallcase>
  Example : node importDevData.js tours
 */

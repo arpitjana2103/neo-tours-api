@@ -17,10 +17,10 @@ app.set("query parser", (str) => qs.parse(str));
 
 const limiter = rateLimit({
     windowMs: helper.toMs("1h"),
-    limit: 3,
+    limit: 100,
     message: {
         status: "fail",
-        message: "Too many requests from this IP, try agail later",
+        message: "Too many requests from this IP, try again later",
     },
 });
 app.use("/api", limiter);
