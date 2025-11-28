@@ -2,6 +2,7 @@ const express = require("express");
 const qs = require("qs");
 const tourRouter = require("./routes/tour.route");
 const userRouter = require("./routes/user.route");
+const reviewRouter = require("./routes/review.route");
 const {
     globalErrorHandeller,
     AppError,
@@ -31,6 +32,7 @@ app.use(express.json());
 
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/reviews", reviewRouter);
 
 // Handellling Unhandled Routes
 app.use((req, res, next) => {

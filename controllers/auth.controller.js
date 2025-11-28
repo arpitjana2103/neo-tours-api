@@ -75,7 +75,6 @@ exports.login = catchAsyncErrors(async function (req, res, next) {
 exports.authProtect = catchAsyncErrors(async function (req, res, next) {
     // [1] Getting the Token
     let token = req.headers.authorization;
-    console.log(token);
     if (token && token.startsWith("Bearer")) {
         token = token.split(" ")[1];
     }

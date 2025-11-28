@@ -115,7 +115,7 @@ const tourSchema = new mongoose.Schema(
         Enables virtual fields in both JSON and object outputs.
         Ensures computed properties (like fullName) appear when using
         doc.toObject(), JSON.stringify(doc), or res.json(doc).
-        Useful for including virtuals in API responses and logs.
+        Useful for including virtuals in API responses and logs. ]
         */
         toJSON: { virtuals: true },
         toObject: { virtuals: true },
@@ -127,6 +127,18 @@ const tourSchema = new mongoose.Schema(
 
 tourSchema.virtual("durationWeeks").get(function () {
     return this.duration ? Number((this.duration / 7).toFixed(1)) : undefined;
+});
+
+/* [ Note : 
+   Virtual Populate Doc : https://bit.ly/virtual-populate
+   This implements Parent-Referencing between Tour (parent) and Review (child),
+   where each Review stores the Tour’s _id in its `tour` field. The virtual populate links them at query time by fetching all reviews related to a tour, without embedding or storing them inside the Tour document. ]
+*/
+
+tourSchema.virtual("reviews", {
+    ref: "Review",
+    foreignField: "tour",
+    localField: "_id",
 });
 
 //////////////////////////////////////////////
