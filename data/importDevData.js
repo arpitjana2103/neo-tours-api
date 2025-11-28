@@ -4,6 +4,7 @@ const fs = require("fs");
 const Models = {
     tours: require("../models/tour.model"),
     users: require("../models/user.model"),
+    reviews: require("../models/review.model"),
 };
 
 dotenv.config({ path: `${__dirname}/../config.env` });
