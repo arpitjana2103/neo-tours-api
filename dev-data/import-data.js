@@ -65,6 +65,6 @@ const importData = async function (fileName) {
 [ Note : 
  cd to dir first
  Command Structure 
- node <fileName> collectionName@<smallcase>
- Example : node importDevData.js tours
+ node <fileName> <collectionName@smallcase>
+ Example : node import-data.js tours
 */
