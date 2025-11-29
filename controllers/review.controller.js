@@ -23,11 +23,15 @@ exports.getTourReviews = catchAsyncErrors(async function (req, res, next) {
 });
 
 exports.updateReview = catchAsyncErrors(async function (req, res, next) {
-    const userId = req.user._id;
+    const loggedInUserId = req.user._id;
     const reviewId = req.params.reviewId;
     const review = await Review.findById(reviewId);
 
-    if (!review.user.equals(userId)) {
+    if (!review) {
+        return next(new AppError("Review not found", 400));
+    }
+
+    if (!review.user.equals(loggedInUserId)) {
         return next(
             new AppError("Review does not belongs to current user", 403),
         );
@@ -42,5 +46,31 @@ exports.updateReview = catchAsyncErrors(async function (req, res, next) {
     return res.status(200).json({
         status: "success",
         review: review,
+    });
+});
+
+exports.deleteReview = catchAsyncErrors(async function (req, res, next) {
+    const loggedInUserId = req.user._id;
+    const loggedInUserRole = req.user.role;
+    const reviewId = req.params.reviewId;
+    const review = await Review.findById(reviewId);
+
+    if (!review) {
+        return next(new AppError("Review not found", 400));
+    }
+
+    if (loggedInUserRole === "user") {
+        if (!review.user.equals(loggedInUserId)) {
+            return next(
+                new AppError("Review does not belongs to current user", 403),
+            );
+        }
+    }
+
+    await review.deleteOne();
+
+    return res.status(204).json({
+        status: "success",
+        data: null,
     });
 });

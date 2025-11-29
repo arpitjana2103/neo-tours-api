@@ -18,7 +18,15 @@ reviewRouter
 
 reviewRouter
     .route("/:reviewId")
-    .patch(authController.authProtect, reviewController.updateReview);
-// delete review
+    .patch(
+        authController.authProtect,
+        authController.restrictTo("user"),
+        reviewController.updateReview,
+    )
+    .delete(
+        authController.authProtect,
+        authController.restrictTo("user", "admin"),
+        reviewController.deleteReview,
+    );
 
 module.exports = reviewRouter;

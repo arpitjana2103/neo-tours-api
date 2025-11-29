@@ -53,8 +53,8 @@ exports.deleteMe = catchAsyncErrors(async function (req, res, next) {
 });
 
 exports.getMe = catchAsyncErrors(async function (req, res, next) {
-    const userId = req.user._id;
-    const user = await User.findById(userId);
+    const loggedInUserId = req.user._id;
+    const user = await User.findById(loggedInUserId);
     return res.status(200).json({
         status: "success",
         data: { user: user },
