@@ -66,7 +66,7 @@ class QueryFeatures {
 
     static processReqQuery({ ...reqQuery }) {
         // 1. Exclude Prohibited fields
-        const excludeFields = ["page", "limit", "sort", "fields"];
+        const excludeFields = ["page", "limit", "sort", "fields", "populate"];
         excludeFields.forEach((field) => delete reqQuery[field]);
 
         // 2. Add "$" before comparison operators

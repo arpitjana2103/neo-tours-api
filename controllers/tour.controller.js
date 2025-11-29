@@ -22,11 +22,18 @@ exports.createTour = catchAsyncErrors(async function (req, res, next) {
 exports.getAllTours = catchAsyncErrors(async function (req, res, next) {
     const mongooseQuery = Tour.find();
     const queryFeatures = new QueryFeatures(mongooseQuery, req.query);
-    const query = queryFeatures
+    let query = queryFeatures
         .filter()
         .sort()
         .limitFields()
         .paginate().mongooseQuery;
+
+    if (req.query.populate === "guides") {
+        query = query.populate({
+            path: "guides",
+            select: "name email photo role",
+        });
+    }
 
     const tours = await query;
 
