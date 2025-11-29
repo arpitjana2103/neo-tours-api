@@ -55,13 +55,19 @@ exports.aliasTop5Cheap = catchAsyncErrors(async function (req, res, next) {
 
 exports.getTour = catchAsyncErrors(async function (req, res, next) {
     const { id } = req.params;
-    const tour = await Tour.findById(id).populate({
-        path: "reviews",
-        populate: {
-            path: "user",
-            select: "name photo",
-        },
-    });
+    let query = Tour.findById(id);
+
+    if (req.query.populate === "reviews") {
+        query = query.populate({
+            path: "reviews",
+            populate: {
+                path: "user",
+                select: "name photo",
+            },
+        });
+    }
+
+    const tour = await query;
 
     if (!tour) {
         return next(new AppError("No tour found with that ID", 404));
