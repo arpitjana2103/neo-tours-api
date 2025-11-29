@@ -16,7 +16,9 @@ reviewRouter
     .route("/:tourId")
     .get(authController.authProtect, reviewController.getTourReviews);
 
-// update review
+reviewRouter
+    .route("/:reviewId")
+    .patch(authController.authProtect, reviewController.updateReview);
 // delete review
 
 module.exports = reviewRouter;

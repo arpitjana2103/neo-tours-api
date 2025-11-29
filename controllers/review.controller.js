@@ -1,5 +1,5 @@
 const Review = require("../models/review.model");
-const { catchAsyncErrors } = require("./error.controller");
+const { catchAsyncErrors, AppError } = require("./error.controller");
 
 exports.createReview = catchAsyncErrors(async function (req, res, next) {
     req.body.user = req.user._id;
@@ -19,5 +19,28 @@ exports.getTourReviews = catchAsyncErrors(async function (req, res, next) {
     return res.status(200).json({
         status: "success",
         reviews: reviews,
+    });
+});
+
+exports.updateReview = catchAsyncErrors(async function (req, res, next) {
+    const userId = req.user._id;
+    const reviewId = req.params.reviewId;
+    const review = await Review.findById(reviewId);
+
+    if (!review.user.equals(userId)) {
+        return next(
+            new AppError("Review does not belongs to current user", 403),
+        );
+    }
+
+    const { rating, review: message } = req.body;
+    if (rating) review.rating = rating;
+    if (message) review.review = message;
+
+    await review.save({ validateBeforeSave: true });
+
+    return res.status(200).json({
+        status: "success",
+        review: review,
     });
 });

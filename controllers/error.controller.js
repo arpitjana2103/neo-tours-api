@@ -51,7 +51,7 @@ function sendErrForDev(err, res) {
     if (err.code === 11000) err.statusCode = 400;
     if (err.name === "ValidationError") err.statusCode = 400;
     return res.status(err.statusCode).json({
-        status: err.status,
+        status: "error",
         message: err.message,
         error: err,
         stack: err.stack,
