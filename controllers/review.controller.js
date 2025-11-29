@@ -11,4 +11,13 @@ exports.createReview = catchAsyncErrors(async function (req, res, next) {
     });
 });
 
-// exports.getReviewsOfTour = catchAsyncErrors
+exports.getTourReviews = catchAsyncErrors(async function (req, res, next) {
+    const tourId = req.params.tourId;
+    const reviews = await Review.find({ tour: tourId })
+        .select("-tour")
+        .populate({ path: "user", select: "name photo" });
+    return res.status(200).json({
+        status: "success",
+        reviews: reviews,
+    });
+});
