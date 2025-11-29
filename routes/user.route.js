@@ -28,4 +28,7 @@ userRouter
     .route("/delete-me")
     .delete(authController.authProtect, userController.deleteMe);
 
+// get - me
+userRouter.route("/me").get(authController.authProtect, userController.getMe);
+
 module.exports = userRouter;

@@ -2,7 +2,7 @@ const express = require("express");
 const authController = require("./../controllers/auth.controller");
 const reviewController = require("./../controllers/review.controller");
 
-// const reviewRouter = express.Router({ mergeParams: true });
+const reviewRouter = express.Router({ mergeParams: true });
 
 reviewRouter
     .route("/")
@@ -15,5 +15,8 @@ reviewRouter
 reviewRouter
     .route("/:tourId")
     .get(authController.authProtect, reviewController.getTourReviews);
+
+// update review
+// delete review
 
 module.exports = reviewRouter;
