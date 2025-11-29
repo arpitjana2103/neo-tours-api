@@ -8,8 +8,12 @@ const tourRouter = express.Router();
 
 tourRouter
     .route("/")
-    .post(tourController.createTour)
-    .get(authController.authProtect, tourController.getAllTours);
+    .post(
+        authController.authProtect,
+        authController.restrictTo("admin", "lead-guide"),
+        tourController.createTour,
+    )
+    .get(tourController.getAllTours);
 
 tourRouter
     .route("/top-5-cheap")
@@ -21,7 +25,11 @@ tourRouter.route("/monthly-plan/:year").get(tourController.getMonthlyPlan);
 tourRouter
     .route("/:id")
     .get(tourController.getTour)
-    .patch(tourController.updateTour)
+    .patch(
+        authController.authProtect,
+        authController.restrictTo("admin", "lead-guide"),
+        tourController.updateTour,
+    )
     .delete(
         authController.authProtect,
         authController.restrictTo("admin", "lead-guide"),

@@ -3,32 +3,20 @@ const authController = require("./../controllers/auth.controller");
 const userController = require("./../controllers/user.controller");
 const userRouter = express.Router();
 
-userRouter
-    .route("/")
-    .get(
-        authController.authProtect,
-        authController.restrictTo("admin"),
-        userController.getAllUsers,
-    );
-
 userRouter.route("/signup").post(authController.signup);
 userRouter.route("/login").post(authController.login);
-
 userRouter.route("/forgot-password").post(authController.forgotPassword);
 userRouter.route("/reset-password/:token").patch(authController.resetPassword);
-userRouter
-    .route("/update-password")
-    .patch(authController.authProtect, authController.updatePassword);
+
+userRouter.use(authController.authProtect);
 
 userRouter
-    .route("/update-me")
-    .patch(authController.authProtect, userController.updateMe);
+    .route("/")
+    .get(authController.restrictTo("admin"), userController.getAllUsers);
 
-userRouter
-    .route("/delete-me")
-    .delete(authController.authProtect, userController.deleteMe);
-
-// get - me
-userRouter.route("/me").get(authController.authProtect, userController.getMe);
+userRouter.route("/update-password").patch(authController.updatePassword);
+userRouter.route("/update-me").patch(userController.updateMe);
+userRouter.route("/delete-me").delete(userController.deleteMe);
+userRouter.route("/me").get(userController.getMe);
 
 module.exports = userRouter;
